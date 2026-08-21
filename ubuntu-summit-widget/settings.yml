@@ -1,0 +1,49 @@
+widget_enabled:
+  default: true
+  type: bool
+  description: "Master on/off for the Interim Hub Widget."
+
+summit_category_slug:
+  default: summit
+  type: string
+  description: "Category slug to match. E.g. 'summit' for /c/summit."
+
+summit_group_name:
+  default: "ubuntu-summit"
+  type: string
+  description: "Name of the group required for Summit activities."
+
+required_group_id:
+  default: 119
+  type: integer
+  description: "Numeric ID of the group required for Summit activities."
+
+interim_badge_text:
+  default: "Ubuntu Summit"
+  type: string
+  description: "The small orange text above the main interim heading."
+
+interim_title:
+  default: "On the road to Ubuntu Summit 26.10"
+  type: string
+  description: "The main heading for the interim category hub."
+
+interim_description:
+  default: "The previous Ubuntu Summit has ended, but the next one will be coming soon! Watch sessions from the last iteration, register for the next, or submit your own talk for Ubuntu Summit 26.10."
+  type: string
+  description: "The paragraph text explaining the interim off-season hub."
+
+past_summits_playlist_url:
+  default: "https://www.youtube.com/embed/videoseries?si=6cqCZPhVH5SnYCdn&amp;list=PLwFSk464RMxkkvScqDkfHLIx8ox0hDIDV"
+  type: string
+  description: "The YouTube Embed URL for the off-season video player."
+
+interim_cfp_button_label:
+  default: "Submit your abstract →"
+  type: string
+  description: "The label for the secondary CFP action button."
+
+interim_cfp_button_url:
+  default: "https://ubu.link/ubuntusummit-cfp"
+  type: string
+  description: "The destination URL for the CFP action button."
