@@ -1,0 +1,64 @@
+.ubuntu-cfp-container {
+  background: var(--secondary);
+  padding: 20px 25px;  
+  margin-top: 20px;
+  margin-bottom: 45px; 
+  border-radius: 12px;
+  border: 1px solid #E95420;
+  box-shadow: var(--shadow-dropdown);
+  color: var(--primary);
+}
+
+.ubuntu-cfp-container h2 {
+  margin-top: 0;
+  font-size: 1.6em; 
+  font-weight: bold;
+  border-bottom: 2px solid #E95420;
+  padding-bottom: 8px; 
+  margin-bottom: 15px; 
+  color: var(--primary);
+}
+
+.ubuntu-cfp-container p {
+  margin-bottom: 15px; 
+  font-size: 1em;
+}
+
+.cfp-field {
+  margin-bottom: 15px; 
+}
+
+.cfp-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-size: 0.9em;
+  color: var(--primary);
+}
+
+.cfp-input {
+  width: 100%;
+  padding: 8px; 
+  border-radius: 4px;
+  border: 1px solid var(--primary-low-mid);
+  background: var(--blend-lightish);
+  color: var(--primary);
+  box-sizing: border-box;
+}
+
+textarea.cfp-input {
+  resize: vertical;
+  font-family: inherit;
+  min-height: 90px; 
+}
+
+.cfp-success-view, .cfp-login-promo {
+  text-align: center;
+  padding: 20px 10px; 
+}
+
+.cfp-success-view h2 {
+  color: var(--success);
+  border: none;
+  margin-bottom: 10px;
+}
