@@ -5,7 +5,7 @@ import Component from "@glimmer/component";
 import { tracked } from "@glimmer/tracking";
 import { action } from "@ember/object";
 import { on } from "@ember/modifier";
-import { inject as service } from "@ember/service";
+import { service } from '@ember/service';
 
 // Summit User Group helper
 async function performGroupJoin(api, targetGroupName, targetGroupId) {
