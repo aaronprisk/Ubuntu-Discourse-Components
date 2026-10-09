@@ -1,0 +1,53 @@
+<link href="https://fonts.googleapis.com/css?family=Ubuntu:100,300,400" rel="stylesheet"> 
+<div id="community-banner" class="community-banner is-dark">
+  <!-- Dismiss -->
+  <button id="dismiss-banner" class="banner-dismiss" title="Dismiss banner" aria-label="Close banner">✕</button>
+
+  <div class="banner-grid">
+    <!-- Logo (Hidden on small screens via CSS) -->
+    <div class="banner-logo">
+      <img src="https://assets.ubuntu.com/v1/594d0a0c-Canonical%20Ubuntu%20Dark.svg" alt="Ubuntu Logo" />
+    </div>
+
+    <!-- Video -->
+    <div class="banner-video">
+      <iframe width="100%" height="100%"
+        src="about:blank"
+        title="Community Video"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowfullscreen></iframe>
+    </div>
+
+    <!-- Text and buttons -->
+    <div class="banner-text">
+      <h2>Event Title</h2>
+
+      <div class="banner-subcopy">
+        <strong>Event Subtitle</strong>
+        <p>Event description goes here.</p>
+      </div>
+
+      <!-- Mobile Accordion Trigger -->
+      <button id="banner-actions-toggle" class="banner-actions-toggle" aria-expanded="false" aria-controls="banner-actions-drawer">
+        <span>Summit Activities</span>
+        <span class="drawer-arrow">▼</span>
+      </button>
+
+      <!-- Buttons container / drawer -->
+      <div id="banner-actions-drawer" class="banner-actions banner-actions-drawer">
+        <a id="custom-nav-btn" class="p-button--positive" href="#">Join Summit Conversations</a>
+        <a id="chat-button" class="p-button--base is-dark" href="#">💬 Live Summit Chat</a>
+        <a id="schedule-button" class="p-button--base is-dark" href="#">📅 Talks & Schedule</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Minimized TOP strip (full-width) -->
+<div id="banner-minimized" class="community-banner-min is-dark" style="display:none" role="region" aria-label="Summit banner minimized">
+  <a id="restore-banner" class="community-banner-min-text" title="Show banner again">
+    <span class="live-dot" aria-hidden="true"></span>
+    <span id="banner-minimized-text">Ubuntu Summit is Live — show banner ▲</span>
+  </a>
+</div>
