@@ -1,0 +1,56 @@
+banner_enabled:
+  default: true
+  type: bool
+  description: "Master on/off for the live banner."
+
+youtube_url:
+  default: "https://www.youtube.com/embed/LPCg0NcQICQ?autoplay=1&mute=1"
+  description: "Full YouTube embed URL for the live stream (query params allowed)."
+
+event_title:
+  default: "Ubuntu Summit 26.10"
+
+event_subtitle:
+  default: "Nov 12-13, 2026 — London, United Kingdom"
+
+event_description:
+  default: "The Ubuntu Summit is live right now — join from anywhere!"
+
+primary_cta_label:
+  default: "Join Summit Conversations"
+primary_cta_href:
+  default: "/c/ubuntu-summit"
+
+chat_cta_label:
+  default: "💬 Live Summit Chat"
+chat_cta_href:
+  default: "/chat/c/summit/42"
+
+schedule_cta_label:
+  default: "📅 Talks & Schedule"
+schedule_cta_href:
+  default: "/c/ubuntu-summit/talks"
+
+show_everywhere:
+  default: true
+  type: bool
+  description: "If enabled, banner shows everywhere unless excluded below."
+
+banner_scope:
+  default: global
+  type: enum
+  choices:
+    - global
+    - summit_only
+  description: "Show banner globally or only within a specific category."
+
+summit_category_slug:
+  default: summit
+  type: string
+  description: "Category slug to match when banner_scope is 'summit_only'. E.g. 'summit' for /c/summit."
+
+minimized_text:
+  default: "Ubuntu Summit is Live ▲"
+  type: string
+  description: "Text shown in the minimized top strip."
+

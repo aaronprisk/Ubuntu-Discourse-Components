@@ -1,0 +1,313 @@
+/* =========================================================
+   Ubuntu Live Event Banner
+   ========================================================= */
+
+:root {
+  --header-height: 3.5rem;
+  --z-modal: 11000;
+  --z-chat: 10600;
+  --z-banner: 10500;
+  --z-header: 10400;
+
+  /* Vanilla dark theme colors */
+  --banner-bg: #000000;
+  --text-light: #ffffff;
+  --text-muted: #aea79f;
+  
+  /* Vanilla Positive & Neutral Tokens */
+  --vf-color-positive: #0e8420;
+  --vf-color-positive-hover: #0b6619;
+  --vf-color-positive-active: #084d13;
+  --vf-border-dark: #666666;
+  --vf-border-dark-hover: #888888;
+}
+
+/* Keep core layers sane */
+/* .d-header { z-index: var(--z-header) !important; } */
+/* .chat-drawer-outlet-container { z-index: var(--z-chat) !important; } */
+/* .modal-container { z-index: var(--z-modal) !important; } */
+
+/* -----------------------
+   Banner base & layout
+----------------------- */
+.community-banner,
+.community-banner * { box-sizing: border-box; }
+
+.community-banner {
+  position: relative;
+  background: var(--banner-bg);
+  color: var(--text-light);
+  border-radius: 0;
+  margin: 0;
+  overflow: hidden;
+  z-index: var(--z-banner);
+  border-bottom: 1px solid #111;
+  font-family: "Ubuntu Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.community-banner .banner-grid {
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr;
+  gap: 1.5rem;
+  padding: 1rem 1rem 1rem;
+  align-items: start;
+}
+
+/* Logo */
+.banner-logo { max-width: 180px; }
+.banner-logo img { max-width: 100%; height: auto; display: block; }
+
+/* Video */
+.community-banner .banner-video {
+  position: relative;
+  width: 100%;
+  min-height: 315px;
+  background: #000;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.community-banner .banner-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Subcopy & headings */
+.banner-text h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 100;
+  color: #fff;
+}
+
+.banner-subcopy strong {
+  display: block;
+  font-weight: 300;
+  margin-bottom: 0.25rem;
+}
+
+.banner-subcopy p {
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  line-height: 1.4;
+  font-size: 1rem;
+}
+
+/* -----------------------
+   Vanilla Button Patterns
+----------------------- */
+.banner-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.banner-actions a,
+.p-button--positive,
+.p-button--base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.4;
+  text-decoration: none;
+  border-radius: 0 !important;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.1s ease-in-out, border-color 0.1s ease-in-out, color 0.1s ease-in-out;
+}
+
+/* Positive Button (Green) */
+.p-button--positive {
+  background-color: var(--vf-color-positive);
+  border: 1px solid var(--vf-color-positive);
+  color: #ffffff !important;
+}
+
+.p-button--positive:hover {
+  background-color: var(--vf-color-positive-hover);
+  border-color: var(--vf-color-positive-hover);
+}
+
+.p-button--positive:active {
+  background-color: var(--vf-color-positive-active);
+  border-color: var(--vf-color-positive-active);
+}
+
+/* Neutral / Outline Dark Button */
+.p-button--base.is-dark {
+  background-color: transparent;
+  border: 1px solid var(--vf-border-dark);
+  color: #ffffff !important;
+}
+
+.p-button--base.is-dark:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: var(--vf-border-dark-hover);
+}
+
+.p-button--base.is-dark:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Dismiss Button */
+.community-banner .banner-dismiss {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.community-banner .banner-dismiss:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--vf-border-dark);
+}
+
+/* Hide drawer toggle button on desktop */
+.banner-actions-toggle {
+  display: none;
+}
+
+/* ----------------------------------------------------
+   Small Screen tweaks
+---------------------------------------------------- */
+@media (max-width: 980px) {
+  .community-banner .banner-grid {
+    grid-template-columns: 1fr;
+    padding: 1rem 0.75rem;
+    gap: 0.75rem;
+  }
+
+  /* 1. Completely hide big logo on small screens */
+  .banner-logo {
+    display: none !important;
+  }
+
+  /* 2. Hide subcopy (subtitle & description) to save vertical room */
+  .community-banner .banner-subcopy {
+    display: none !important;
+  }
+
+  .community-banner .banner-video {
+    min-height: 220px;
+  }
+
+  /* Keep title tight against the video & actions */
+  .banner-text h2 {
+    margin: 0 0 0.25rem 0;
+    font-size: 1.15rem;
+  }
+
+  /* Drawer toggle button */
+  .banner-actions-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #1e1e1e;
+    border: 1px solid var(--vf-border-dark);
+    color: var(--text-light);
+    font-size: 0.9rem;
+    cursor: pointer;
+    border-radius: 0;
+  }
+
+  .banner-actions-toggle .drawer-arrow {
+    transition: transform 0.2s ease;
+    font-size: 0.75rem;
+  }
+
+  .banner-actions-toggle[aria-expanded="true"] .drawer-arrow {
+    transform: rotate(180deg);
+  }
+
+  /* Hide actions drawer by default on mobile */
+  .banner-actions-drawer {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 0.25rem;
+    padding: 0.5rem;
+    background: #1a1a1a;
+    border: 1px solid #333;
+  }
+
+  /* Expand actions drawer when toggled open */
+  .banner-actions-drawer.is-open {
+    display: flex;
+  }
+
+  .banner-actions-drawer a {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0.35rem;
+  }
+}
+
+/* -----------------------
+   Minimized TOP strip
+----------------------- */
+#banner-minimized {
+  position: sticky;
+  top: 0;
+  left: 0; 
+  right: 0;
+  width: 100%;
+  z-index: var(--z-banner);
+  background: var(--banner-bg);
+  border-bottom: 1px solid #000;
+  display: block;
+}
+
+#banner-minimized .community-banner-min-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 36px;
+  padding: 0.25rem 0.75rem;
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+#banner-minimized .community-banner-min-text:hover { 
+  background: #1f1f1f; 
+}
+
+/* Pulse animation */
+#banner-minimized .live-dot {
+  width: 8px; 
+  height: 8px; 
+  border-radius: 50%;
+  background: #c7162b;
+  box-shadow: 0 0 0 0 rgba(199, 22, 43, 0.7);
+  animation: live-pulse 1.5s infinite;
+}
+
+@keyframes live-pulse {
+  0%   { transform: scale(1);   box-shadow: 0 0 0 0 rgba(199, 22, 43, 0.7); }
+  70%  { transform: scale(1.35); box-shadow: 0 0 0 6px rgba(199, 22, 43, 0); }
+  100% { transform: scale(1);   box-shadow: 0 0 0 0 rgba(199, 22, 43, 0); }
+}
