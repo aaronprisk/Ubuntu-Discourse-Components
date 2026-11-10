@@ -1,9 +1,102 @@
 import { apiInitializer } from "discourse/lib/api";
 import DiscourseURL from "discourse/lib/url";
+import { ajax } from "discourse/lib/ajax";
+import { popupAjaxError } from "discourse/lib/ajax-error";
+
+// --- Summit Group Join Helper ---
+async function performGroupJoin(api, targetGroupName, targetGroupId) {
+  const user = api.getCurrentUser?.();
+  if (!user) {
+    const returnUrl = window.location.pathname + "?auto_join_summit=1";
+    window.location.assign(`/login?return_to=${encodeURIComponent(returnUrl)}`);
+    return false;
+  }
+
+  try {
+    let groupId = targetGroupId;
+    if (!groupId || isNaN(groupId) || groupId <= 0) {
+      const groupResp = await ajax(`/groups/${encodeURIComponent(targetGroupName)}.json`);
+      groupId = groupResp?.group?.id;
+      if (!groupId) throw new Error(`Could not resolve ID for: ${targetGroupName}`);
+    }
+
+    try {
+      await ajax(`/groups/${groupId}/join.json`, {
+        type: "PUT",
+        data: { usernames: user.username },
+      });
+    } catch (joinError) {
+      const joinErrStr = JSON.stringify(joinError?.jqXHR?.responseJSON || joinError?.message || "").toLowerCase();
+      if (joinErrStr.includes("already") || joinError?.jqXHR?.status === 422) {
+        // User is already a member
+      } else {
+        await ajax(`/groups/${groupId}/members.json`, {
+          type: "PUT",
+          data: { usernames: user.username },
+        });
+      }
+    }
+    return true;
+  } catch (error) {
+    const errorString = JSON.stringify(error?.jqXHR?.responseJSON || error?.message || "").toLowerCase();
+    if (errorString.includes("already") || error?.jqXHR?.status === 422) {
+      return true;
+    }
+    popupAjaxError(error);
+    return false;
+  }
+}
+
+// --- Group Membership Checker ---
+let cachedMembership = null;
+
+async function checkSummitMembership(user, targetGroupName, targetGroupId) {
+  if (!user) return false;
+  if (cachedMembership !== null) return cachedMembership;
+
+  try {
+    const resp = await ajax(`/u/${encodeURIComponent(user.username)}.json`);
+    const groups = resp?.groups || resp?.user?.groups || [];
+    const isMember = groups.some(
+      (g) =>
+        Number(g.id) === Number(targetGroupId) ||
+        g.name?.toLowerCase() === targetGroupName.toLowerCase()
+    );
+    cachedMembership = isMember;
+    return isMember;
+  } catch (e) {
+    console.warn("Could not verify summit group membership:", e);
+    return false;
+  }
+}
 
 export default apiInitializer("1.8.0", (api) => {
-  api.onPageChange(() => {
-    const s = settings;
+  const s = settings;
+  const targetGroupName = s.summit_group_name || "ubuntu-summit";
+  const targetGroupId = Number(s.required_group_id);
+
+  // --- Auto-Join Listener after Login ---
+  const currentUser = api.getCurrentUser?.();
+  if (currentUser) {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("auto_join_summit") === "1") {
+      const cleanUrl =
+        window.location.pathname +
+        window.location.search
+          .replace(/[\?&]auto_join_summit=1/, "")
+          .replace(/^&/, "?");
+      window.history.replaceState({}, document.title, cleanUrl || window.location.pathname);
+
+      performGroupJoin(api, targetGroupName, targetGroupId).then((joined) => {
+        if (joined) {
+          cachedMembership = true;
+          window.location.reload();
+        }
+      });
+    }
+  }
+
+  api.onPageChange(async () => {
     const user = api.getCurrentUser?.();
 
     // Elements
@@ -24,14 +117,14 @@ export default apiInitializer("1.8.0", (api) => {
     const strong      = banner.querySelector(".banner-text strong");
     const p           = banner.querySelector(".banner-text p");
     const miniTextEl  = document.getElementById("banner-minimized-text");
-    const toggleBtn = document.getElementById("banner-actions-toggle");
-    const drawer    = document.getElementById("banner-actions-drawer");
+    const toggleBtn   = document.getElementById("banner-actions-toggle");
+    const drawer      = document.getElementById("banner-actions-drawer");
 
-// --- Mobile CTA Accordion Toggle ---
-toggleBtn?.addEventListener("click", () => {
-  const isOpen = drawer.classList.toggle("is-open");
-  toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
-});
+    // --- Mobile CTA Accordion Toggle ---
+    toggleBtn?.addEventListener("click", () => {
+      const isOpen = drawer.classList.toggle("is-open");
+      toggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
 
     // --- Helpers ---
     function isSameOrigin(href) {
@@ -102,6 +195,7 @@ toggleBtn?.addEventListener("click", () => {
     if (strong && s.event_subtitle) strong.textContent = s.event_subtitle;
     if (p && s.event_description) p.textContent = s.event_description;
 
+    // Apply baseline URLs and labels from settings
     if (navBtn) {
       if (s.primary_cta_label) navBtn.textContent = s.primary_cta_label;
       if (s.primary_cta_href) navBtn.href = s.primary_cta_href;
@@ -141,33 +235,82 @@ toggleBtn?.addEventListener("click", () => {
       banner.scrollIntoView({ block: "start", behavior: "smooth" });
     });
 
-    // --- Routing behavior ---
+    // --- Standard internal routing helper ---
+    const bindStandardCTA = (el) => {
+      if (!el) return;
+      el.onclick = (e) => {
+        const href = el.getAttribute("href") || "/";
+        if (isSameOrigin(href)) {
+          e.preventDefault();
+          DiscourseURL.routeTo(href);
+        }
+      };
+    };
+
+    // --- State-Driven CTA Behaviors ---
     if (!user) {
+      // 1. NOT LOGGED IN: Redirect to login/signup with return URL
       const loginRedirect = (el) => {
         if (!el) return;
         el.onclick = (e) => {
           e.preventDefault();
           const href = el.getAttribute("href") || "/";
           if (isSameOrigin(href)) {
-            window.location.href = `/login?redirect=${encodeURIComponent(href)}`;
+            const returnUrl = href + (href.includes("?") ? "&" : "?") + "auto_join_summit=1";
+            window.location.href = `/login?return_to=${encodeURIComponent(returnUrl)}`;
           } else {
             window.location.href = href;
           }
         };
       };
       [navBtn, chatBtn, scheduleBtn].forEach(loginRedirect);
+
     } else {
-      const bindCTA = (el) => {
-        if (!el) return;
-        el.onclick = (e) => {
-          const href = el.getAttribute("href") || "/";
-          if (isSameOrigin(href)) {
+      // Check summit registration status
+      const isRegistered = await checkSummitMembership(user, targetGroupName, targetGroupId);
+
+      if (!isRegistered) {
+        // 2. LOGGED IN BUT NOT REGISTERED
+        if (navBtn) {
+          navBtn.textContent = "+ Click to Register";
+          navBtn.onclick = async (e) => {
             e.preventDefault();
-            DiscourseURL.routeTo(href);
-          }
+            navBtn.textContent = "Registering...";
+            navBtn.style.pointerEvents = "none";
+
+            const success = await performGroupJoin(api, targetGroupName, targetGroupId);
+            if (success) {
+              cachedMembership = true;
+              navBtn.textContent = "✓ Registered";
+              setTimeout(() => {
+                // Restore primary CTA button label and functionality
+                navBtn.textContent = s.primary_cta_label || "Join";
+                navBtn.style.pointerEvents = "auto";
+                bindStandardCTA(navBtn);
+                [chatBtn, scheduleBtn].forEach(bindStandardCTA);
+              }, 1200);
+            } else {
+              navBtn.textContent = "+ Click to Register";
+              navBtn.style.pointerEvents = "auto";
+            }
+          };
+        }
+
+        // Gate secondary actions so they prompt registration first
+        const gateSecondaryCTA = (el) => {
+          if (!el) return;
+          el.onclick = (e) => {
+            e.preventDefault();
+            navBtn?.scrollIntoView({ behavior: "smooth", block: "center" });
+            navBtn?.focus();
+          };
         };
-      };
-      [navBtn, chatBtn, scheduleBtn].forEach(bindCTA);
+        [chatBtn, scheduleBtn].forEach(gateSecondaryCTA);
+
+      } else {
+        // 3. LOGGED IN & REGISTERED: Normal routing for all buttons
+        [navBtn, chatBtn, scheduleBtn].forEach(bindStandardCTA);
+      }
     }
   });
 });
